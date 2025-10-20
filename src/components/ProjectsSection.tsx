@@ -74,59 +74,133 @@ export const ProjectsSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" style={{ perspective: '2000px' }}>
           {projects.map((project, index) => (
             <motion.div
               key={project.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, rotateX: -30, z: -200 }}
+              whileInView={{ opacity: 1, rotateX: 0, z: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.8, delay: index * 0.1 }}
+              whileHover={{ 
+                rotateY: 8,
+                rotateX: -5,
+                z: 80,
+                transition: { duration: 0.4 }
+              }}
+              style={{ transformStyle: 'preserve-3d' }}
             >
-              <Card className="glass glass-hover overflow-hidden h-full group">
+              <Card className="glass glass-hover overflow-hidden h-full group relative"
+                    style={{ 
+                      boxShadow: '0 30px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(138, 92, 255, 0.3)',
+                      border: '1px solid rgba(138, 92, 255, 0.4)'
+                    }}>
+                {/* Holographic frame effect */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-shimmer" />
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary to-transparent animate-shimmer" />
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-accent to-transparent animate-shimmer" />
+                  <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-transparent via-accent to-transparent animate-shimmer" />
+                </div>
+                
                 {/* Project image */}
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <motion.img
                     src={project.image}
                     alt={project.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover"
+                    whileHover={{ scale: 1.15 }}
+                    transition={{ duration: 0.6 }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent opacity-60" />
                   
-                  {/* Hover overlay with buttons */}
-                  <div className="absolute inset-0 bg-primary/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                    <Button size="sm" className="neon-glow" asChild>
-                      <a href={project.live} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        Live
-                      </a>
-                    </Button>
-                    <Button size="sm" variant="outline" className="glass-hover" asChild>
-                      <a href={project.github} target="_blank" rel="noopener noreferrer">
-                        <Github className="w-4 h-4 mr-2" />
-                        Code
-                      </a>
-                    </Button>
-                  </div>
+                  {/* Scanline effect */}
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-b from-primary/20 via-transparent to-transparent"
+                    animate={{
+                      y: ['-100%', '200%'],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                  
+                  {/* Hover overlay with buttons - enhanced holographic */}
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/30 backdrop-blur-md opacity-0 group-hover:opacity-100 flex items-center justify-center gap-4"
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotateZ: 5 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Button size="sm" className="neon-glow" asChild
+                              style={{ boxShadow: '0 0 20px rgba(0, 229, 255, 0.8)' }}>
+                        <a href={project.live} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Live
+                        </a>
+                      </Button>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotateZ: -5 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Button size="sm" variant="outline" className="glass-hover" asChild
+                              style={{ 
+                                border: '1px solid rgba(138, 92, 255, 0.5)',
+                                boxShadow: '0 0 15px rgba(138, 92, 255, 0.5)'
+                              }}>
+                        <a href={project.github} target="_blank" rel="noopener noreferrer">
+                          <Github className="w-4 h-4 mr-2" />
+                          Code
+                        </a>
+                      </Button>
+                    </motion.div>
+                  </motion.div>
                 </div>
 
-                {/* Project details */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                {/* Project details - enhanced */}
+                <div className="p-6 relative">
+                  {/* Holographic overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
+                  
+                  <h3 className="text-xl font-bold mb-2 gradient-text relative z-10">
                     {project.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm mb-4">
+                  <p className="text-muted-foreground text-sm mb-4 relative z-10">
                     {project.description}
                   </p>
 
-                  {/* Tech stack */}
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
+                  {/* Tech stack - enhanced badges */}
+                  <div className="flex flex-wrap gap-2 relative z-10">
+                    {project.tags.map((tag, i) => (
+                      <motion.div
+                        key={tag}
+                        initial={{ opacity: 0, scale: 0 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                      >
+                        <Badge variant="secondary" className="text-xs"
+                               style={{
+                                 background: 'rgba(138, 92, 255, 0.2)',
+                                 border: '1px solid rgba(138, 92, 255, 0.4)',
+                                 boxShadow: '0 0 10px rgba(138, 92, 255, 0.3)'
+                               }}>
+                          {tag}
+                        </Badge>
+                      </motion.div>
                     ))}
                   </div>
+                  
+                  {/* Corner accents */}
+                  <div className="absolute top-2 left-2 w-4 h-4 border-l border-t border-primary/50" />
+                  <div className="absolute bottom-2 right-2 w-4 h-4 border-r border-b border-primary/50" />
                 </div>
               </Card>
             </motion.div>

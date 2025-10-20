@@ -60,29 +60,61 @@ export const JourneySection = () => {
               return (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: isEven ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, z: -100, rotateY: isEven ? -45 : 45 }}
+                  whileInView={{ opacity: 1, z: 0, rotateY: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  transition={{ duration: 0.8, delay: index * 0.15 }}
                   className={`relative flex items-center ${
                     isEven ? 'md:flex-row' : 'md:flex-row-reverse'
                   } flex-row`}
+                  style={{ perspective: '1000px' }}
                 >
-                  {/* Timeline node */}
-                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 z-10">
-                    <div className="w-16 h-16 rounded-full glass flex items-center justify-center neon-glow">
+                  {/* Timeline node - Holographic */}
+                  <motion.div 
+                    className="absolute left-8 md:left-1/2 -translate-x-1/2 z-10"
+                    whileHover={{ scale: 1.2, rotateZ: 180 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <div className="w-16 h-16 rounded-full glass flex items-center justify-center relative"
+                         style={{ 
+                           boxShadow: '0 0 40px rgba(0, 229, 255, 0.6), inset 0 0 20px rgba(0, 229, 255, 0.3)',
+                           border: '2px solid rgba(0, 229, 255, 0.5)'
+                         }}>
                       <Icon className="w-8 h-8 text-primary" />
+                      {/* Orbital rings */}
+                      <div className="absolute inset-0 rounded-full border border-primary/30 animate-ping" />
+                      <div className="absolute inset-0 rounded-full border border-secondary/30 animate-pulse-glow" />
                     </div>
-                  </div>
+                  </motion.div>
 
-                  {/* Content */}
-                  <div className={`w-full md:w-5/12 ml-24 md:ml-0 ${isEven ? 'md:pr-16' : 'md:pl-16'}`}>
-                    <Card className="glass glass-hover p-6">
-                      <div className="text-primary font-bold mb-2">{item.year}</div>
-                      <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                  {/* Content - 3D floating card */}
+                  <motion.div 
+                    className={`w-full md:w-5/12 ml-24 md:ml-0 ${isEven ? 'md:pr-16' : 'md:pl-16'}`}
+                    whileHover={{ 
+                      z: 50,
+                      rotateY: isEven ? 5 : -5,
+                      rotateX: -5,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    style={{ transformStyle: 'preserve-3d' }}
+                  >
+                    <Card className="glass glass-hover p-6 relative overflow-hidden"
+                          style={{ 
+                            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(138, 92, 255, 0.3)',
+                            border: '1px solid rgba(138, 92, 255, 0.3)'
+                          }}>
+                      {/* Holographic scanline effect */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-secondary/10 animate-shimmer pointer-events-none" />
+                      
+                      <div className="text-primary font-bold mb-2 text-lg">{item.year}</div>
+                      <h3 className="text-xl font-bold mb-2 gradient-text">{item.title}</h3>
                       <p className="text-muted-foreground">{item.description}</p>
+                      
+                      {/* Corner accents */}
+                      <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-accent" />
+                      <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-accent" />
                     </Card>
-                  </div>
+                  </motion.div>
                 </motion.div>
               );
             })}

@@ -6,10 +6,12 @@ import { SkillsSection } from '@/components/SkillsSection';
 import { ProjectsSection } from '@/components/ProjectsSection';
 import { ContactSection } from '@/components/ContactSection';
 import { Footer } from '@/components/Footer';
+import { BackgroundEffects } from '@/components/BackgroundEffects';
 
 const Index = () => {
   return (
     <div className="relative min-h-screen">
+      <BackgroundEffects />
       <CustomCursor />
       
       <main className="relative z-10">
