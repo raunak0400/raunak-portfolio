@@ -14,14 +14,17 @@ function AnimatedSphere() {
   });
 
   return (
-    <Sphere ref={meshRef} args={[1, 100, 100]} scale={2.5}>
+    <Sphere ref={meshRef} args={[1, 64, 64]} scale={2.5}>
       <MeshDistortMaterial
         color="#00E5FF"
         attach="material"
-        distort={0.4}
-        speed={2}
-        roughness={0.2}
-        metalness={0.8}
+        distort={0.5}
+        speed={2.5}
+        roughness={0}
+        metalness={1}
+        wireframe={true}
+        transparent={true}
+        opacity={0.8}
       />
     </Sphere>
   );
@@ -39,14 +42,14 @@ function Torus() {
 
   return (
     <mesh ref={torusRef} position={[0, 0, 0]}>
-      <torusGeometry args={[3, 0.4, 16, 100]} />
+      <torusGeometry args={[3, 0.3, 16, 100]} />
       <meshStandardMaterial
         color="#8A5CFF"
         emissive="#8A5CFF"
-        emissiveIntensity={0.5}
+        emissiveIntensity={1}
         wireframe
         transparent
-        opacity={0.6}
+        opacity={0.7}
       />
     </mesh>
   );
@@ -76,27 +79,33 @@ function OrbitingRings() {
   return (
     <>
       <mesh ref={ring1Ref} position={[0, 0, 0]}>
-        <torusGeometry args={[3.5, 0.05, 16, 100]} />
+        <torusGeometry args={[3.5, 0.03, 16, 100]} />
         <meshStandardMaterial
           color="#00FFC6"
           emissive="#00FFC6"
-          emissiveIntensity={1}
+          emissiveIntensity={2}
+          transparent
+          opacity={0.9}
         />
       </mesh>
       <mesh ref={ring2Ref} position={[0, 0, 0]}>
-        <torusGeometry args={[4, 0.05, 16, 100]} />
+        <torusGeometry args={[4, 0.03, 16, 100]} />
         <meshStandardMaterial
           color="#00E5FF"
           emissive="#00E5FF"
-          emissiveIntensity={1}
+          emissiveIntensity={2}
+          transparent
+          opacity={0.9}
         />
       </mesh>
       <mesh ref={ring3Ref} position={[0, 0, 0]}>
-        <torusGeometry args={[4.5, 0.05, 16, 100]} />
+        <torusGeometry args={[4.5, 0.03, 16, 100]} />
         <meshStandardMaterial
           color="#8A5CFF"
           emissive="#8A5CFF"
-          emissiveIntensity={1}
+          emissiveIntensity={2}
+          transparent
+          opacity={0.9}
         />
       </mesh>
     </>
@@ -105,13 +114,14 @@ function OrbitingRings() {
 
 export const Hero3D = () => {
   return (
-    <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[10, 10, 5]} intensity={1.5} />
-        <pointLight position={[-10, -10, -5]} intensity={1} color="#00FFC6" />
-        <pointLight position={[10, 10, 5]} intensity={1} color="#00E5FF" />
-        <pointLight position={[0, -10, 0]} intensity={0.8} color="#8A5CFF" />
+    <div className="w-full h-full bg-transparent">
+      <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+        <ambientLight intensity={0.2} />
+        <directionalLight position={[10, 10, 5]} intensity={2} />
+        <pointLight position={[-10, -10, -5]} intensity={1.5} color="#00FFC6" />
+        <pointLight position={[10, 10, 5]} intensity={1.5} color="#00E5FF" />
+        <pointLight position={[0, -10, 0]} intensity={1.2} color="#8A5CFF" />
+        <pointLight position={[0, 10, 10]} intensity={1} color="#FF00FF" />
         
         <AnimatedSphere />
         <Torus />
@@ -121,7 +131,9 @@ export const Hero3D = () => {
           enableZoom={false} 
           enablePan={false}
           autoRotate
-          autoRotateSpeed={0.8}
+          autoRotateSpeed={1}
+          enableDamping
+          dampingFactor={0.05}
         />
       </Canvas>
     </div>
