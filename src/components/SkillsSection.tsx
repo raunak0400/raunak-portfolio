@@ -1,5 +1,5 @@
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const skills = [
   // Programming Languages
@@ -56,247 +56,81 @@ const skills = [
   { name: 'Pytest', level: 'Advanced', proficiency: 67, color: '#0A9EDC', category: 'Other Tech Skills', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg' },
 ];
 
-// Holographic Skill Card Component
-const HologramSkillCard = ({ skill, index }: { skill: typeof skills[0], index: number }) => {
+// Skill Item Component - Horizontal layout with logo left, text right
+const SkillItem = ({ skill, index }: { skill: typeof skills[0], index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  
-  const rotateX = useSpring(useTransform(mouseY, [-100, 100], [8, -8]), { stiffness: 150, damping: 25 });
-  const rotateY = useSpring(useTransform(mouseX, [-100, 100], [-8, 8]), { stiffness: 150, damping: 25 });
-  const z = useSpring(isHovered ? 40 : 0, { stiffness: 300, damping: 30 });
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    mouseX.set(e.clientX - centerX);
-    mouseY.set(e.clientY - centerY);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-    setIsHovered(false);
-  };
-
-  // Get neon glow color based on proficiency
-  const getGlowColor = () => {
-    if (skill.proficiency >= 90) return '#00FFC6';
-    if (skill.proficiency >= 70) return '#00E5FF';
-    if (skill.proficiency >= 50) return '#8A5CFF';
-    return '#FF6B9D';
-  };
-
-  const glowColor = getGlowColor();
 
   return (
     <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, scale: 0.8, rotateX: -30, z: -100 }}
-      whileInView={{ opacity: 1, scale: 1, rotateX: 0, z: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ 
-        duration: 0.7, 
-        delay: index * 0.03,
-        type: "spring",
-        stiffness: 120
-      }}
-      onMouseMove={handleMouseMove}
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      className="relative group cursor-pointer"
-      style={{ 
-        transformStyle: 'preserve-3d',
-        perspective: 1200,
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative group flex items-center gap-4 p-3 rounded-xl"
+      style={{
+        background: isHovered 
+          ? 'rgba(255, 255, 255, 0.05)' 
+          : 'transparent',
+        borderLeft: `2px solid ${isHovered ? skill.color : 'transparent'}`,
+        transition: 'all 0.3s ease',
       }}
     >
+      {/* Skill Logo */}
       <motion.div
-        className="relative"
+        className="relative w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 backdrop-blur-sm"
         style={{
-          rotateX,
-          rotateY,
-          z,
-          transformStyle: 'preserve-3d',
+          background: `rgba(${parseInt(skill.color.slice(1, 3), 16)}, ${parseInt(skill.color.slice(3, 5), 16)}, ${parseInt(skill.color.slice(5, 7), 16)}, 0.1)`,
+          border: `1px solid ${skill.color}40`,
+          boxShadow: isHovered ? `0 0 20px ${skill.color}60` : 'none',
+        }}
+        animate={{
+          scale: isHovered ? 1.05 : 1,
         }}
       >
-        {/* Holographic glass card */}
-        <motion.div
-          className="relative glass rounded-2xl p-6 border-2 overflow-hidden backdrop-blur-xl"
-          style={{
-            borderColor: isHovered ? glowColor : `${glowColor}40`,
-            boxShadow: isHovered 
-              ? `0 0 50px ${glowColor}80, 0 20px 60px rgba(0,0,0,0.4), inset 0 0 30px ${glowColor}20`
-              : `0 10px 30px rgba(0,0,0,0.3), 0 0 20px ${glowColor}30`,
-            background: `
-              radial-gradient(circle at top left, ${glowColor}08, transparent 60%),
-              radial-gradient(circle at bottom right, ${skill.color}05, transparent 60%),
-              rgba(10, 10, 30, 0.4)
-            `,
-          }}
-          animate={{
-            borderColor: isHovered ? [glowColor, `${glowColor}60`, glowColor] : `${glowColor}40`,
-          }}
-          transition={{ duration: 1.5, repeat: isHovered ? Infinity : 0 }}
-        >
-          {/* Skill logo with holographic effect */}
-          <motion.div
-            className="relative w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 flex items-center justify-center"
-            animate={{
-              rotateY: isHovered ? [0, 15, -15, 0] : 0,
-              scale: isHovered ? [1, 1.1, 1] : 1,
-            }}
-            transition={{ duration: 2, repeat: isHovered ? Infinity : 0 }}
-            style={{
-              filter: `drop-shadow(0 0 20px ${glowColor}) drop-shadow(0 0 40px ${skill.color}80)`,
-            }}
-          >
-            <img 
-              src={skill.logo} 
-              alt={skill.name}
-              className="w-full h-full object-contain"
-              style={{
-                filter: isHovered ? 'brightness(1.3) contrast(1.2)' : 'brightness(1.1)',
-              }}
-            />
-            
-            {/* Rotating hologram ring */}
-            <motion.div
-              className="absolute inset-0 rounded-full border-2 opacity-40"
-              style={{ borderColor: glowColor }}
-              animate={{
-                rotate: 360,
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                rotate: { duration: 4, repeat: Infinity, ease: "linear" },
-                scale: { duration: 2, repeat: Infinity },
-              }}
-            />
-          </motion.div>
-          
-          {/* Skill name with neon glow */}
-          <motion.h3 
-            className="text-lg md:text-xl font-bold text-center mb-2 relative z-10"
-            style={{ 
-              color: glowColor,
-              textShadow: `0 0 20px ${glowColor}, 0 0 40px ${glowColor}60`,
-            }}
-          >
-            {skill.name}
-          </motion.h3>
-
-          {/* Proficiency level */}
-          <motion.p 
-            className="text-sm text-center font-mono mb-3 opacity-90"
-            style={{ 
-              color: glowColor,
-            }}
-          >
-            {skill.level}
-          </motion.p>
-
-          {/* Proficiency bar */}
-          <div className="relative h-2 bg-black/40 rounded-full overflow-hidden backdrop-blur-sm border border-white/10">
-            <motion.div
-              className="absolute inset-y-0 left-0 rounded-full"
-              style={{
-                background: `linear-gradient(90deg, ${skill.color}, ${glowColor})`,
-                boxShadow: `0 0 15px ${glowColor}, inset 0 0 10px rgba(255,255,255,0.3)`,
-              }}
-              initial={{ width: 0 }}
-              whileInView={{ width: `${skill.proficiency}%` }}
-              transition={{ duration: 1.5, delay: index * 0.03 }}
-            />
-            
-            {/* Scanning light effect */}
-            <motion.div
-              className="absolute inset-y-0 w-8"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${glowColor}80, transparent)`,
-              }}
-              animate={{
-                x: ['-100%', '400%'],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                repeatDelay: 1,
-                ease: "linear",
-              }}
-            />
-          </div>
-
-          {/* Proficiency percentage */}
-          <motion.div 
-            className="text-xs text-center mt-2 font-mono"
-            style={{ color: `${glowColor}80` }}
-          >
-            {skill.proficiency}%
-          </motion.div>
-
-          {/* Holographic scanlines */}
-          <div className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden opacity-20">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-b from-transparent via-white to-transparent"
-              style={{ 
-                height: '200%', 
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)',
-              }}
-              animate={{ y: ['-100%', '0%'] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            />
-          </div>
-
-          {/* Corner accents */}
-          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 opacity-60" style={{ borderColor: glowColor }} />
-          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 opacity-60" style={{ borderColor: glowColor }} />
-          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 opacity-60" style={{ borderColor: glowColor }} />
-          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 opacity-60" style={{ borderColor: glowColor }} />
-        </motion.div>
-
-        {/* Back face depth glow */}
-        <motion.div
-          className="absolute inset-0 rounded-2xl"
-          style={{
-            background: `radial-gradient(circle, ${glowColor}40, transparent 70%)`,
-            transform: 'translateZ(-30px)',
-            filter: 'blur(30px)',
-            opacity: isHovered ? 0.9 : 0.4,
-          }}
+        <img 
+          src={skill.logo} 
+          alt={skill.name}
+          className="w-8 h-8 object-contain"
         />
+      </motion.div>
 
-        {/* Floating particles around card */}
-        {isHovered && (
-          <>
-            {[...Array(4)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1.5 h-1.5 rounded-full"
-                style={{
-                  background: glowColor,
-                  boxShadow: `0 0 10px ${glowColor}`,
-                  left: '50%',
-                  top: '50%',
-                }}
-                animate={{
-                  x: [0, Math.cos((i * 90 * Math.PI) / 180) * 80, 0],
-                  y: [0, Math.sin((i * 90 * Math.PI) / 180) * 80, 0],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.2,
-                }}
-              />
-            ))}
-          </>
-        )}
+      {/* Skill Info */}
+      <div className="flex-1 min-w-0">
+        <h4 
+          className="font-semibold text-sm md:text-base mb-0.5"
+          style={{
+            color: isHovered ? skill.color : 'hsl(var(--foreground))',
+            textShadow: isHovered ? `0 0 10px ${skill.color}80` : 'none',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          {skill.name}
+        </h4>
+        <p className="text-xs opacity-70 font-mono">
+          {skill.level} • {skill.proficiency}%
+        </p>
+      </div>
+
+      {/* Proficiency indicator */}
+      <motion.div 
+        className="w-16 h-1 rounded-full overflow-hidden bg-black/20 backdrop-blur-sm flex-shrink-0"
+        style={{
+          border: `1px solid ${skill.color}20`,
+        }}
+      >
+        <motion.div
+          className="h-full rounded-full"
+          style={{
+            background: `linear-gradient(90deg, ${skill.color}, ${skill.color}80)`,
+            boxShadow: `0 0 8px ${skill.color}80`,
+          }}
+          initial={{ width: 0 }}
+          whileInView={{ width: `${skill.proficiency}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: index * 0.05 }}
+        />
       </motion.div>
     </motion.div>
   );
@@ -319,7 +153,7 @@ const TypewriterTitle = ({ text }: { text: string }) => {
 
   return (
     <motion.h2 
-      className="text-6xl md:text-8xl font-bold gradient-text relative inline-block"
+      className="text-5xl md:text-7xl font-bold gradient-text relative inline-block mb-4"
       style={{
         textShadow: '0 0 60px hsl(187, 100%, 50%), 0 0 100px hsl(267, 100%, 68%)',
         fontFamily: '"Orbitron", monospace',
@@ -327,7 +161,7 @@ const TypewriterTitle = ({ text }: { text: string }) => {
     >
       {displayText}
       <motion.span
-        className="inline-block w-1 h-16 md:h-20 ml-2 bg-primary"
+        className="inline-block w-1 h-14 md:h-16 ml-2 bg-primary"
         animate={{ opacity: [1, 0, 1] }}
         transition={{ duration: 0.8, repeat: Infinity }}
       />
@@ -336,294 +170,217 @@ const TypewriterTitle = ({ text }: { text: string }) => {
       <motion.div
         className="absolute -bottom-4 left-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent"
         style={{
+          width: '100%',
           boxShadow: '0 0 20px hsl(var(--primary)), 0 0 40px hsl(var(--secondary))',
         }}
-        initial={{ width: 0 }}
-        animate={{ width: `${(displayText.length / text.length) * 100}%` }}
-        transition={{ duration: 0.3 }}
+        animate={{
+          opacity: [0.5, 1, 0.5],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+        }}
       />
     </motion.h2>
   );
 };
 
 export const SkillsSection = () => {
-  const [filter, setFilter] = useState<string>('All');
-  const categories = ['All', 'Programming Languages', 'Frontend', 'Backend', 'Database', 'DevOps & Tools', 'Other Tech Skills'];
-  
-  const filteredSkills = filter === 'All' 
-    ? skills 
-    : skills.filter(s => s.category === filter);
+  const categories = ['Programming Languages', 'Frontend', 'Backend', 'Database', 'DevOps & Tools', 'Other Tech Skills'];
 
   return (
-    <section id="skills" className="py-32 px-4 relative overflow-hidden min-h-screen flex items-center">
-      {/* Floating 3D particles background */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        {[...Array(60)].map((_, i) => (
+    <section className="relative min-h-screen py-20 px-4 overflow-hidden">
+      {/* Futuristic background */}
+      <div className="absolute inset-0 -z-10">
+        {/* Dark gradient base */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-[#080820] to-black" />
+        
+        {/* Floating particles */}
+        {[...Array(30)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full"
             style={{
-              background: `hsl(${180 + Math.random() * 100}, 100%, ${50 + Math.random() * 30}%)`,
+              background: `hsl(${180 + i * 10}, 100%, ${50 + (i % 3) * 15}%)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              boxShadow: `0 0 15px hsl(${180 + Math.random() * 100}, 100%, 60%)`,
+              boxShadow: `0 0 8px hsl(${180 + i * 10}, 100%, ${50 + (i % 3) * 15}%)`,
             }}
             animate={{
-              y: [0, -50 - Math.random() * 50, 0],
-              x: [0, (Math.random() - 0.5) * 30, 0],
-              opacity: [0.2, 1, 0.2],
-              scale: [1, 1.5 + Math.random(), 1],
+              y: [0, -30, 0],
+              opacity: [0.2, 0.8, 0.2],
             }}
             transition={{
-              duration: 4 + Math.random() * 6,
+              duration: 3 + Math.random() * 4,
               repeat: Infinity,
-              delay: Math.random() * 3,
-              ease: "easeInOut",
+              delay: Math.random() * 2,
             }}
           />
         ))}
-      </div>
 
-      {/* Animated circuit lines */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute h-px bg-gradient-to-r from-transparent via-primary to-transparent"
-            style={{
-              top: `${10 + i * 12}%`,
-              left: 0,
-              right: 0,
-            }}
-            animate={{
-              opacity: [0.1, 0.5, 0.1],
-              scaleX: [0.8, 1.2, 0.8],
-            }}
-            transition={{
-              duration: 5 + i,
-              repeat: Infinity,
-              delay: i * 0.5,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Depth fog layers */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <motion.div
-          className="absolute top-0 left-0 w-full h-full"
+        {/* Grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-10"
           style={{
-            background: 'radial-gradient(circle at 20% 30%, hsl(187, 100%, 50%) 0%, transparent 50%)',
+            backgroundImage: `
+              linear-gradient(hsl(187, 100%, 50%) 1px, transparent 1px),
+              linear-gradient(90deg, hsl(187, 100%, 50%) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
           }}
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.5, 0.2],
-          }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute bottom-0 right-0 w-full h-full"
-          style={{
-            background: 'radial-gradient(circle at 80% 70%, hsl(267, 100%, 68%) 0%, transparent 50%)',
-          }}
-          animate={{
-            scale: [1.3, 1, 1.3],
-            opacity: [0.2, 0.5, 0.2],
-          }}
-          transition={{ duration: 12, repeat: Infinity }}
         />
       </div>
 
-      <div className="container mx-auto relative z-10">
-        {/* Section Title with Typewriter Effect */}
-        <motion.div
-          initial={{ opacity: 0, y: 80, rotateX: -20 }}
-          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, type: "spring" }}
-          className="text-center mb-20 relative"
-          style={{ 
-            transformStyle: 'preserve-3d',
-            perspective: 1000,
-          }}
-        >
+      <div className="container mx-auto max-w-7xl relative z-10">
+        {/* Section Title */}
+        <div className="text-center mb-16">
           <TypewriterTitle text="SKILL UNIVERSE" />
-          
-          <motion.p 
-            className="text-muted-foreground max-w-3xl mx-auto font-mono text-lg mt-8"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            style={{
-              textShadow: '0 0 10px hsl(var(--primary) / 0.3)',
-            }}
-          >
-            // Futuristic 3D holographic workstation — where Raunak's skills are displayed like an AI control system
-          </motion.p>
-
-          {/* Holographic light projection */}
-          <motion.div
-            className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[600px] h-2"
-            style={{
-              background: 'linear-gradient(90deg, transparent, hsl(var(--primary)) 20%, hsl(var(--secondary)) 50%, hsl(var(--accent)) 80%, transparent)',
-              boxShadow: '0 0 40px hsl(var(--primary)), 0 0 80px hsl(var(--secondary))',
-              filter: 'blur(2px)',
-            }}
-            animate={{
-              opacity: [0.4, 0.8, 0.4],
-              scaleX: [0.8, 1, 0.8],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-            }}
-          />
-        </motion.div>
-
-        {/* 3D Category Filter Panels */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="flex justify-center gap-3 mb-20 flex-wrap px-4"
-        >
-          {categories.map((category, idx) => (
-            <motion.button
-              key={category}
-              onClick={() => setFilter(category)}
-              className={`glass px-6 py-3 rounded-xl font-mono text-sm border-2 relative overflow-hidden backdrop-blur-lg ${
-                filter === category 
-                  ? 'border-primary text-primary' 
-                  : 'border-primary/20 text-muted-foreground hover:border-primary/50'
-              }`}
-              style={{
-                boxShadow: filter === category 
-                  ? '0 0 40px hsl(var(--primary) / 0.6), 0 10px 30px rgba(0,0,0,0.4)' 
-                  : '0 5px 15px rgba(0,0,0,0.3)',
-                background: filter === category
-                  ? 'radial-gradient(circle at center, hsl(var(--primary) / 0.15), transparent)'
-                  : 'rgba(10, 10, 30, 0.3)',
-              }}
-              initial={{ opacity: 0, x: -20, rotateY: -10 }}
-              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              whileHover={{ 
-                scale: 1.05, 
-                rotateY: 5,
-                boxShadow: '0 0 50px hsl(var(--primary) / 0.5)',
-              }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {category}
-              
-              {/* Active indicator */}
-              {filter === category && (
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                  layoutId="activeCategory"
+        </div>
+        
+        {/* Category Panels Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {categories.map((category, catIndex) => {
+            const categorySkills = skills.filter(skill => skill.category === category);
+            
+            return (
+              <motion.div
+                key={category}
+                initial={{ opacity: 0, y: 40, rotateX: -15 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: catIndex * 0.15,
+                  type: "spring"
+                }}
+                className="relative group"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  perspective: 1200,
+                }}
+              >
+                {/* Glassmorphic Panel */}
+                <div 
+                  className="relative rounded-3xl p-6 backdrop-blur-xl"
                   style={{
-                    boxShadow: '0 0 10px hsl(var(--primary))',
+                    background: `
+                      linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+                      rgba(10, 10, 30, 0.4)
+                    `,
+                    border: '2px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow: `
+                      0 8px 32px rgba(0, 0, 0, 0.4),
+                      inset 0 0 60px rgba(0, 255, 198, 0.05),
+                      0 0 40px rgba(0, 229, 255, 0.1)
+                    `,
+                  }}
+                >
+                  {/* Corner brackets */}
+                  <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-primary/60 rounded-tl-2xl" />
+                  <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-primary/60 rounded-tr-2xl" />
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 border-primary/60 rounded-bl-2xl" />
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-primary/60 rounded-br-2xl" />
+
+                  {/* Category heading with floating effect */}
+                  <motion.div
+                    className="relative mb-6 pb-4 border-b border-white/10"
+                    animate={{
+                      y: [0, -3, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <h3 
+                      className="text-lg md:text-xl font-bold text-center relative z-10"
+                      style={{
+                        color: 'hsl(var(--primary))',
+                        textShadow: '0 0 20px hsl(var(--primary)), 0 0 40px hsl(var(--primary) / 0.5)',
+                        fontFamily: '"Orbitron", monospace',
+                      }}
+                    >
+                      {category}
+                    </h3>
+                    
+                    {/* Glowing underline */}
+                    <motion.div
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"
+                      style={{
+                        width: '60%',
+                        boxShadow: '0 0 10px hsl(var(--primary))',
+                      }}
+                      animate={{
+                        opacity: [0.5, 1, 0.5],
+                        width: ['50%', '70%', '50%'],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                      }}
+                    />
+                  </motion.div>
+
+                  {/* Skills list */}
+                  <div className="space-y-2">
+                    {categorySkills.map((skill, index) => (
+                      <SkillItem key={skill.name} skill={skill} index={index} />
+                    ))}
+                  </div>
+
+                  {/* Holographic scanlines */}
+                  <div className="absolute inset-0 pointer-events-none rounded-3xl overflow-hidden opacity-10">
+                    <motion.div
+                      className="absolute inset-0"
+                      style={{ 
+                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px)',
+                      }}
+                      animate={{ y: ['-100%', '0%'] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    />
+                  </div>
+
+                  {/* Glow effect on hover */}
+                  <motion.div
+                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 pointer-events-none"
+                    style={{
+                      background: 'radial-gradient(circle at center, rgba(0, 255, 198, 0.1), transparent 70%)',
+                      transition: 'opacity 0.5s ease',
+                    }}
+                  />
+                </div>
+
+                {/* Depth shadow */}
+                <div 
+                  className="absolute inset-0 rounded-3xl -z-10"
+                  style={{
+                    background: 'radial-gradient(circle, rgba(0, 229, 255, 0.3), transparent 60%)',
+                    transform: 'translateZ(-20px) scale(0.95)',
+                    filter: 'blur(20px)',
+                    opacity: 0.5,
                   }}
                 />
-              )}
-              
-              {/* Scanline effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent pointer-events-none"
-                animate={{ y: ['-100%', '200%'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              />
-            </motion.button>
-          ))}
-        </motion.div>
-
-        {/* Holographic Skill Cards Grid */}
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 max-w-7xl mx-auto"
-          layout
-        >
-          {filteredSkills.map((skill, index) => (
-            <HologramSkillCard key={skill.name} skill={skill} index={index} />
-          ))}
-        </motion.div>
-
-        {/* Floating 3D laser grid floor */}
-        <div className="absolute bottom-20 left-0 right-0 h-64 opacity-20 pointer-events-none" style={{ perspective: '1000px' }}>
-          <motion.div 
-            className="relative w-full h-full"
-            style={{
-              transformStyle: 'preserve-3d',
-              transform: 'rotateX(60deg)',
-            }}
-          >
-            {/* Horizontal lines */}
-            {[...Array(10)].map((_, i) => (
-              <motion.div
-                key={`h-${i}`}
-                className="absolute left-0 right-0 h-px"
-                style={{
-                  top: `${i * 10}%`,
-                  background: 'linear-gradient(90deg, transparent, hsl(var(--primary)) 50%, transparent)',
-                }}
-                animate={{
-                  opacity: [0.2, 0.6, 0.2],
-                }}
-                transition={{
-                  duration: 3,
-                  delay: i * 0.1,
-                  repeat: Infinity,
-                }}
-              />
-            ))}
-            {/* Vertical lines */}
-            {[...Array(12)].map((_, i) => (
-              <motion.div
-                key={`v-${i}`}
-                className="absolute top-0 bottom-0 w-px"
-                style={{
-                  left: `${i * 8.33}%`,
-                  background: 'linear-gradient(180deg, transparent, hsl(var(--secondary)) 50%, transparent)',
-                }}
-                animate={{
-                  opacity: [0.2, 0.6, 0.2],
-                }}
-                transition={{
-                  duration: 3,
-                  delay: i * 0.1,
-                  repeat: Infinity,
-                }}
-              />
-            ))}
-          </motion.div>
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* Rotating 3D micro-particles */}
-        <div className="absolute inset-0 opacity-30 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                background: `hsl(${180 + Math.random() * 80}, 100%, 60%)`,
-                boxShadow: `0 0 20px hsl(${180 + Math.random() * 80}, 100%, 60%)`,
-                clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-              }}
-              animate={{
-                rotate: [0, 360],
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 0.8, 0.3],
-              }}
-              transition={{
-                duration: 5 + Math.random() * 5,
-                repeat: Infinity,
-                ease: "linear",
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
+        {/* Floating laser grid floor */}
+        <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none">
+          <div 
+            className="absolute inset-0 opacity-20"
+            style={{
+              background: 'linear-gradient(to bottom, transparent, rgba(0, 229, 255, 0.1))',
+              backgroundImage: `
+                linear-gradient(rgba(0, 229, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: '60px 60px',
+              transform: 'perspective(500px) rotateX(60deg)',
+              transformOrigin: 'bottom',
+            }}
+          />
         </div>
       </div>
     </section>
