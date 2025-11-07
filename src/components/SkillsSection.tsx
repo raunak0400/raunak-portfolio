@@ -56,54 +56,51 @@ const skills = [
   { name: 'Pytest', level: 'Advanced', proficiency: 67, color: '#0A9EDC', category: 'Other Tech Skills', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg' },
 ];
 
-// Skill Item Component - Horizontal layout with logo left, text right
+// Skill Item Component - Optimized with CSS transitions
 const SkillItem = ({ skill, index }: { skill: typeof skills[0], index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5) }}
+      onViewportEnter={() => !hasAnimated && setHasAnimated(true)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative group flex items-center gap-4 p-3 rounded-xl"
+      className="relative group flex items-center gap-4 p-3 rounded-xl transition-all duration-300"
       style={{
-        background: isHovered 
-          ? 'rgba(255, 255, 255, 0.05)' 
-          : 'transparent',
+        background: isHovered ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
         borderLeft: `2px solid ${isHovered ? skill.color : 'transparent'}`,
-        transition: 'all 0.3s ease',
       }}
     >
       {/* Skill Logo */}
-      <motion.div
-        className="relative w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 backdrop-blur-sm"
+      <div
+        className="relative w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 backdrop-blur-sm transition-all duration-300"
         style={{
           background: `rgba(${parseInt(skill.color.slice(1, 3), 16)}, ${parseInt(skill.color.slice(3, 5), 16)}, ${parseInt(skill.color.slice(5, 7), 16)}, 0.1)`,
           border: `1px solid ${skill.color}40`,
           boxShadow: isHovered ? `0 0 20px ${skill.color}60` : 'none',
-        }}
-        animate={{
-          scale: isHovered ? 1.05 : 1,
+          transform: isHovered ? 'scale(1.05)' : 'scale(1)',
         }}
       >
         <img 
           src={skill.logo} 
           alt={skill.name}
           className="w-8 h-8 object-contain"
+          loading="lazy"
         />
-      </motion.div>
+      </div>
 
       {/* Skill Info */}
       <div className="flex-1 min-w-0">
         <h4 
-          className="font-semibold text-sm md:text-base mb-0.5"
+          className="font-semibold text-sm md:text-base mb-0.5 transition-all duration-300"
           style={{
             color: isHovered ? skill.color : 'hsl(var(--foreground))',
             textShadow: isHovered ? `0 0 10px ${skill.color}80` : 'none',
-            transition: 'all 0.3s ease',
           }}
         >
           {skill.name}
@@ -114,24 +111,21 @@ const SkillItem = ({ skill, index }: { skill: typeof skills[0], index: number })
       </div>
 
       {/* Proficiency indicator */}
-      <motion.div 
+      <div 
         className="w-16 h-1 rounded-full overflow-hidden bg-black/20 backdrop-blur-sm flex-shrink-0"
         style={{
           border: `1px solid ${skill.color}20`,
         }}
       >
-        <motion.div
-          className="h-full rounded-full"
+        <div
+          className="h-full rounded-full transition-all duration-1000 ease-out"
           style={{
             background: `linear-gradient(90deg, ${skill.color}, ${skill.color}80)`,
             boxShadow: `0 0 8px ${skill.color}80`,
+            width: hasAnimated ? `${skill.proficiency}%` : '0%',
           }}
-          initial={{ width: 0 }}
-          whileInView={{ width: `${skill.proficiency}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: index * 0.05 }}
         />
-      </motion.div>
+      </div>
     </motion.div>
   );
 };
@@ -190,30 +184,23 @@ export const SkillsSection = () => {
 
   return (
     <section className="relative min-h-screen py-20 px-4 overflow-hidden">
-      {/* Futuristic background */}
+      {/* Optimized background */}
       <div className="absolute inset-0 -z-10">
         {/* Dark gradient base */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-[#080820] to-black" />
         
-        {/* Floating particles */}
-        {[...Array(30)].map((_, i) => (
-          <motion.div
+        {/* Reduced floating particles with CSS animation */}
+        {[...Array(15)].map((_, i) => (
+          <div
             key={i}
-            className="absolute w-1 h-1 rounded-full"
+            className="absolute w-1 h-1 rounded-full animate-float-slow"
             style={{
-              background: `hsl(${180 + i * 10}, 100%, ${50 + (i % 3) * 15}%)`,
+              background: `hsl(${180 + i * 15}, 100%, ${50 + (i % 3) * 15}%)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              boxShadow: `0 0 8px hsl(${180 + i * 10}, 100%, ${50 + (i % 3) * 15}%)`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 0.8, 0.2],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 4,
-              repeat: Infinity,
-              delay: Math.random() * 2,
+              boxShadow: `0 0 6px hsl(${180 + i * 15}, 100%, ${50 + (i % 3) * 15}%)`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${4 + Math.random() * 3}s`,
             }}
           />
         ))}
@@ -281,18 +268,8 @@ export const SkillsSection = () => {
                   <div className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 border-primary/60 rounded-bl-2xl" />
                   <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-primary/60 rounded-br-2xl" />
 
-                  {/* Category heading with floating effect */}
-                  <motion.div
-                    className="relative mb-6 pb-4 border-b border-white/10"
-                    animate={{
-                      y: [0, -3, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
+                  {/* Category heading with CSS animation */}
+                  <div className="relative mb-6 pb-4 border-b border-white/10 animate-float-subtle">
                     <h3 
                       className="text-lg md:text-xl font-bold text-center relative z-10"
                       style={{
@@ -304,23 +281,15 @@ export const SkillsSection = () => {
                       {category}
                     </h3>
                     
-                    {/* Glowing underline */}
-                    <motion.div
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"
+                    {/* Glowing underline with CSS */}
+                    <div
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse-glow"
                       style={{
                         width: '60%',
                         boxShadow: '0 0 10px hsl(var(--primary))',
                       }}
-                      animate={{
-                        opacity: [0.5, 1, 0.5],
-                        width: ['50%', '70%', '50%'],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                      }}
                     />
-                  </motion.div>
+                  </div>
 
                   {/* Skills list */}
                   <div className="space-y-2">
@@ -329,17 +298,13 @@ export const SkillsSection = () => {
                     ))}
                   </div>
 
-                  {/* Holographic scanlines */}
-                  <div className="absolute inset-0 pointer-events-none rounded-3xl overflow-hidden opacity-10">
-                    <motion.div
-                      className="absolute inset-0"
-                      style={{ 
-                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px)',
-                      }}
-                      animate={{ y: ['-100%', '0%'] }}
-                      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                    />
-                  </div>
+                  {/* Simplified scanlines */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none rounded-3xl overflow-hidden opacity-10"
+                    style={{
+                      background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 229, 255, 0.1) 3px, rgba(0, 229, 255, 0.1) 6px)',
+                    }}
+                  />
 
                   {/* Glow effect on hover */}
                   <motion.div

@@ -115,13 +115,15 @@ function OrbitingRings() {
 export const Hero3D = () => {
   return (
     <div className="w-full h-full bg-transparent">
-      <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
-        <ambientLight intensity={0.2} />
-        <directionalLight position={[10, 10, 5]} intensity={2} />
-        <pointLight position={[-10, -10, -5]} intensity={1.5} color="#00FFC6" />
-        <pointLight position={[10, 10, 5]} intensity={1.5} color="#00E5FF" />
-        <pointLight position={[0, -10, 0]} intensity={1.2} color="#8A5CFF" />
-        <pointLight position={[0, 10, 10]} intensity={1} color="#FF00FF" />
+      <Canvas 
+        camera={{ position: [0, 0, 8], fov: 50 }}
+        dpr={[1, 1.5]} // Limit pixel ratio for better performance
+        performance={{ min: 0.5 }} // Allow frame skipping if needed
+      >
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[10, 10, 5]} intensity={1.5} />
+        <pointLight position={[-10, -10, -5]} intensity={1} color="#00FFC6" />
+        <pointLight position={[10, 10, 5]} intensity={1} color="#00E5FF" />
         
         <AnimatedSphere />
         <Torus />
@@ -131,9 +133,10 @@ export const Hero3D = () => {
           enableZoom={false} 
           enablePan={false}
           autoRotate
-          autoRotateSpeed={1}
+          autoRotateSpeed={0.5}
           enableDamping
-          dampingFactor={0.05}
+          dampingFactor={0.08}
+          makeDefault
         />
       </Canvas>
     </div>

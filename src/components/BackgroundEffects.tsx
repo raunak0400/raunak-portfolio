@@ -18,7 +18,7 @@ export const BackgroundEffects = () => {
     const columns = Math.floor(canvas.width / 20);
     const drops: number[] = Array(columns).fill(1);
 
-    // Floating particles
+    // Reduced floating particles for better performance
     const particles: Array<{
       x: number;
       y: number;
@@ -28,13 +28,13 @@ export const BackgroundEffects = () => {
       size: number;
     }> = [];
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 25; i++) { // Reduced from 50 to 25
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         z: Math.random() * 100,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+        vx: (Math.random() - 0.5) * 0.3, // Slower movement
+        vy: (Math.random() - 0.5) * 0.3,
         size: Math.random() * 2 + 1,
       });
     }
@@ -114,34 +114,26 @@ export const BackgroundEffects = () => {
         className="fixed inset-0 pointer-events-none z-0 opacity-40"
       />
       
-      {/* Floating geometric shards */}
-      {[...Array(5)].map((_, i) => (
-        <motion.div
+      {/* Reduced geometric shards with CSS animation */}
+      {[...Array(3)].map((_, i) => (
+        <div
           key={i}
-          className="fixed w-32 h-32 pointer-events-none"
+          className="fixed w-24 h-24 pointer-events-none animate-float"
           style={{
-            left: `${20 + i * 15}%`,
-            top: `${30 + i * 10}%`,
+            left: `${25 + i * 20}%`,
+            top: `${35 + i * 10}%`,
             zIndex: 0,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            rotate: [0, 180, 360],
-            opacity: [0.1, 0.3, 0.1],
-          }}
-          transition={{
-            duration: 10 + i * 2,
-            repeat: Infinity,
-            ease: "easeInOut",
+            animationDelay: `${i * 2}s`,
+            animationDuration: `${12 + i * 2}s`,
           }}
         >
-          <div className="w-full h-full border border-primary/20 bg-primary/5 backdrop-blur-sm transform rotate-45" 
+          <div className="w-full h-full border border-primary/15 bg-primary/5 backdrop-blur-sm transform rotate-45" 
                style={{ 
                  clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-                 boxShadow: '0 0 30px rgba(0, 229, 255, 0.2)'
+                 boxShadow: '0 0 20px hsl(var(--primary) / 0.1)'
                }} 
           />
-        </motion.div>
+        </div>
       ))}
     </>
   );
