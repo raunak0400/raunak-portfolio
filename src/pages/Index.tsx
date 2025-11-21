@@ -11,37 +11,65 @@ import { LoadingScreen } from '@/components/LoadingScreen';
 import { FPSMonitor } from '@/components/FPSMonitor';
 import { FloatingElements } from '@/components/FloatingElements';
 import { LazySection } from '@/components/LazySection';
+import { ScrollProgressBar } from '@/components/ScrollProgressBar';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { InteractiveParticles } from '@/components/InteractiveParticles';
+import { PageTransition, SectionTransition } from '@/components/PageTransition';
 
 const Index = () => {
   return (
     <>
       <LoadingScreen />
-      <div className="relative min-h-screen">
-        <BackgroundEffects />
-        <CustomCursor />
-        <FPSMonitor />
-        <FloatingElements />
-        
-        <main className="relative z-10">
-          <HeroSection />
-          <LazySection>
-            <AboutSection />
-          </LazySection>
-          <LazySection>
-            <JourneySection />
-          </LazySection>
-          <LazySection>
-            <SkillsSection />
-          </LazySection>
-          <LazySection>
-            <ProjectsSection />
-          </LazySection>
-          <LazySection>
-            <ContactSection />
-          </LazySection>
-          <Footer />
-        </main>
-      </div>
+      <ScrollProgressBar />
+      <ThemeToggle />
+      <InteractiveParticles />
+      
+      <PageTransition>
+        <div className="relative min-h-screen">
+          <BackgroundEffects />
+          <CustomCursor />
+          <FPSMonitor />
+          <FloatingElements />
+          
+          <main className="relative z-10">
+            <SectionTransition>
+              <HeroSection />
+            </SectionTransition>
+            
+            <LazySection>
+              <SectionTransition>
+                <AboutSection />
+              </SectionTransition>
+            </LazySection>
+            
+            <LazySection>
+              <SectionTransition>
+                <JourneySection />
+              </SectionTransition>
+            </LazySection>
+            
+            <LazySection>
+              <SectionTransition>
+                <SkillsSection />
+              </SectionTransition>
+            </LazySection>
+            
+            <LazySection>
+              <SectionTransition>
+                <ProjectsSection />
+              </SectionTransition>
+            </LazySection>
+            
+            <LazySection>
+              <SectionTransition>
+                <ContactSection />
+              </SectionTransition>
+            </LazySection>
+            
+            <Footer />
+          </main>
+        </div>
+      </PageTransition>
     </>
   );
 };
