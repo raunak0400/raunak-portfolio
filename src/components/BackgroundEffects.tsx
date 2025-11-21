@@ -1,8 +1,26 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export const BackgroundEffects = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    // Check initial theme
+    const checkTheme = () => {
+      setIsDark(!document.documentElement.classList.contains('light'));
+    };
+    checkTheme();
+
+    // Watch for theme changes
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -42,11 +60,12 @@ export const BackgroundEffects = () => {
     let animationFrameId: number;
 
     const animate = () => {
-      ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+      // Theme-aware background
+      ctx.fillStyle = isDark ? 'rgba(5, 5, 5, 0.05)' : 'rgba(250, 250, 250, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw digital rain
-      ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
+      // Draw digital rain with theme-aware colors
+      ctx.fillStyle = isDark ? 'rgba(0, 229, 255, 0.8)' : 'rgba(0, 180, 200, 0.6)';
       ctx.font = '15px monospace';
 
       for (let i = 0; i < drops.length; i++) {
@@ -59,14 +78,15 @@ export const BackgroundEffects = () => {
         drops[i]++;
       }
 
-      // Draw floating particles
+      // Draw floating particles with theme-aware colors
       particles.forEach((particle) => {
         const scale = particle.z / 100;
         const alpha = 0.3 + (particle.z / 100) * 0.7;
         
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size * scale, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(138, 92, 255, ${alpha})`;
+        const particleColor = isDark ? '138, 92, 255' : '98, 52, 200';
+        ctx.fillStyle = `rgba(${particleColor}, ${alpha})`;
         ctx.fill();
 
         // Draw glow
@@ -74,8 +94,9 @@ export const BackgroundEffects = () => {
           particle.x, particle.y, 0,
           particle.x, particle.y, particle.size * scale * 3
         );
-        gradient.addColorStop(0, `rgba(0, 255, 198, ${alpha * 0.5})`);
-        gradient.addColorStop(1, 'rgba(0, 255, 198, 0)');
+        const glowColor = isDark ? '0, 255, 198' : '0, 180, 150';
+        gradient.addColorStop(0, `rgba(${glowColor}, ${alpha * 0.5})`);
+        gradient.addColorStop(1, `rgba(${glowColor}, 0)`);
         ctx.fillStyle = gradient;
         ctx.fill();
 
@@ -105,7 +126,7 @@ export const BackgroundEffects = () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isDark]);
 
   return (
     <>
