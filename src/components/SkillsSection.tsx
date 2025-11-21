@@ -89,8 +89,9 @@ const SkillItem = ({ skill, index }: { skill: typeof skills[0], index: number })
         <img 
           src={skill.logo} 
           alt={skill.name}
-          className="w-8 h-8 object-contain"
           loading="lazy"
+          decoding="async"
+          className="w-8 h-8 object-contain"
         />
       </div>
 

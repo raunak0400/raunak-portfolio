@@ -176,8 +176,14 @@ All colors MUST be HSL.
 }
 
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0px); opacity: 0.3; }
-  50% { transform: translateY(-30px); opacity: 0.8; }
+  0%, 100% { 
+    transform: translateY(0px) rotateX(30deg) rotateY(-30deg); 
+    opacity: 0.3; 
+  }
+  50% { 
+    transform: translateY(-30px) rotateX(35deg) rotateY(-35deg); 
+    opacity: 0.6; 
+  }
 }
 
 @keyframes float-subtle {
