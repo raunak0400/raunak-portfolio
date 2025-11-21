@@ -7,23 +7,42 @@ import { ProjectsSection } from '@/components/ProjectsSection';
 import { ContactSection } from '@/components/ContactSection';
 import { Footer } from '@/components/Footer';
 import { BackgroundEffects } from '@/components/BackgroundEffects';
+import { LoadingScreen } from '@/components/LoadingScreen';
+import { FPSMonitor } from '@/components/FPSMonitor';
+import { FloatingElements } from '@/components/FloatingElements';
+import { LazySection } from '@/components/LazySection';
 
 const Index = () => {
   return (
-    <div className="relative min-h-screen">
-      <BackgroundEffects />
-      <CustomCursor />
-      
-      <main className="relative z-10">
-        <HeroSection />
-        <AboutSection />
-        <JourneySection />
-        <SkillsSection />
-        <ProjectsSection />
-        <ContactSection />
-        <Footer />
-      </main>
-    </div>
+    <>
+      <LoadingScreen />
+      <div className="relative min-h-screen">
+        <BackgroundEffects />
+        <CustomCursor />
+        <FPSMonitor />
+        <FloatingElements />
+        
+        <main className="relative z-10">
+          <HeroSection />
+          <LazySection>
+            <AboutSection />
+          </LazySection>
+          <LazySection>
+            <JourneySection />
+          </LazySection>
+          <LazySection>
+            <SkillsSection />
+          </LazySection>
+          <LazySection>
+            <ProjectsSection />
+          </LazySection>
+          <LazySection>
+            <ContactSection />
+          </LazySection>
+          <Footer />
+        </main>
+      </div>
+    </>
   );
 };
 
