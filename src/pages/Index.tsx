@@ -16,24 +16,32 @@ import { ScrollProgressBar } from '@/components/ScrollProgressBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { InteractiveParticles } from '@/components/InteractiveParticles';
 import { PageTransition, SectionTransition } from '@/components/PageTransition';
+import { useDeviceType } from '@/hooks/use-device-type';
 
 const Index = () => {
   const [reducedEffects, setReducedEffects] = useState(false);
+  const deviceType = useDeviceType();
+  
+  // Automatically disable heavy effects on mobile and tablet
+  const shouldShowHeavyEffects = deviceType === 'desktop' && !reducedEffects;
+  const shouldShowCustomCursor = deviceType === 'desktop';
+  const shouldShowFloatingElements = deviceType !== 'mobile';
 
   return (
     <>
       <LoadingScreen />
       <ScrollProgressBar />
       <ThemeToggle />
-      {/* Disable heavy visual effects when performance drops */}
-      {!reducedEffects && <InteractiveParticles />}
+      {shouldShowHeavyEffects && <InteractiveParticles />}
 
       <PageTransition>
         <div className="relative min-h-screen">
-          {!reducedEffects && <BackgroundEffects />}
-          <CustomCursor />
-          <FPSMonitor onLowFPS={() => setReducedEffects(true)} />
-          <FloatingElements />
+          {shouldShowHeavyEffects && <BackgroundEffects />}
+          {shouldShowCustomCursor && <CustomCursor />}
+          {deviceType === 'desktop' && (
+            <FPSMonitor onLowFPS={() => setReducedEffects(true)} />
+          )}
+          {shouldShowFloatingElements && <FloatingElements />}
 
           <main className="relative z-10">
             <SectionTransition>
