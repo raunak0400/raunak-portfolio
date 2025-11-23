@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CustomCursor } from '@/components/CustomCursor';
 import { HeroSection } from '@/components/HeroSection';
 import { AboutSection } from '@/components/AboutSection';
@@ -17,55 +18,58 @@ import { InteractiveParticles } from '@/components/InteractiveParticles';
 import { PageTransition, SectionTransition } from '@/components/PageTransition';
 
 const Index = () => {
+  const [reducedEffects, setReducedEffects] = useState(false);
+
   return (
     <>
       <LoadingScreen />
       <ScrollProgressBar />
       <ThemeToggle />
-      <InteractiveParticles />
-      
+      {/* Disable heavy visual effects when performance drops */}
+      {!reducedEffects && <InteractiveParticles />}
+
       <PageTransition>
         <div className="relative min-h-screen">
-          <BackgroundEffects />
+          {!reducedEffects && <BackgroundEffects />}
           <CustomCursor />
-          <FPSMonitor />
+          <FPSMonitor onLowFPS={() => setReducedEffects(true)} />
           <FloatingElements />
-          
+
           <main className="relative z-10">
             <SectionTransition>
               <HeroSection />
             </SectionTransition>
-            
+
             <LazySection>
               <SectionTransition>
                 <AboutSection />
               </SectionTransition>
             </LazySection>
-            
+
             <LazySection>
               <SectionTransition>
                 <JourneySection />
               </SectionTransition>
             </LazySection>
-            
+
             <LazySection>
               <SectionTransition>
                 <SkillsSection />
               </SectionTransition>
             </LazySection>
-            
+
             <LazySection>
               <SectionTransition>
                 <ProjectsSection />
               </SectionTransition>
             </LazySection>
-            
+
             <LazySection>
               <SectionTransition>
                 <ContactSection />
               </SectionTransition>
             </LazySection>
-            
+
             <Footer />
           </main>
         </div>
